@@ -1,0 +1,62 @@
+NAME="user"
+PASSWORD="pass"
+#export TOMCAT_VERSION="apache-tomcat-8.5.23"
+export TOMCAT_VERSION="apache-tomcat-7.0.57"
+
+export WORKSPACES='/cygdrive/d/_workspaces/'
+export JAVA_HOME='/cygdrive/c/Program Files/Java/jdk1.8.0_121'
+
+export PATH_WIN_TOMCAT='D:\'$TOMCAT_VERSION
+export PATH_LIN_TOMCAT='/cygdrive/d/'$TOMCAT_VERSION
+export CATALINA_BASE=$PATH_WIN_TOMCAT
+export CATALINA_HOME=$CATALINA_BASE
+export CATALINA_OPTS='-Dwtp.deploy="'$PATH_WIN_TOMCAT'\webapps" -Djava.endorsed.dirs="'$PATH_WIN_TOMCAT'\endorsed"  -Dorg.apache.el.parser.COERCE_TO_ZERO=false -Dentorn=des -Xmx1024m -Xms512m -XX:MaxPermSize=256m -DlogDir="D:\_logs_pampol" -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="D:\_logs_pampol" -Djava.security.auth.login.config="D:\_confPCA\gssapi.conf" '
+
+export http_proxy="http://${NAME}:${PASSWORD}@cerberos:8080"
+export HTTP_PROXY=$http_proxy
+export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
+export ftp_proxy=$http_proxy
+export no_proxy="localhost,127.0.0.1,.idiada.ct"
+
+
+_tailfc() {
+    #LC_ALL=en_US.ISO-8859-15 multitail -CS log4j -f $1 $2 $3
+    #LC_ALL=en_US.utf8 multitail -CS log4j -f $1 $2 $3
+	LC_ALL=es_ES.utf8 multitail -CS log4j -f $1 $2 $3
+}
+_killthemall() {
+	kill $(ps aux | grep "$1" | grep -v 'grep' | awk '{print $1}')
+}
+_log_everything() {
+    #LC_ALL=en_US.ISO-8859-15 multitail -CS log4j -s 2 -sn 1,8 -i /cygdrive/d/apache-tomcat-7.0.57/logs/catalina.out -i /cygdrive/d/_logs_pampol/**/*.log /cygdrive/d/_logs_pampol/*.log
+	LC_ALL=en_US.utf8 multitail -CS log4j -s 2 -sn 1,8 -i $PATH_LIN_TOMCAT/logs/catalina.out -i /cygdrive/d/_logs_pampol/**/*.log /cygdrive/d/_logs_pampol/*.log
+}
+_cpwar(){
+   cp $1 $CATALINA_BASE/webapps/
+}
+_mc_wd() { 
+	 mc $WORKSPACES/ $PATH_LIN_TOMCAT
+}
+alias workspaces='cd /cygdrive/d/_workspacesN/'
+alias git_repos='cd /cygdrive/d/_gitRepos/'
+alias log_everything='_log_everything'
+
+alias _tomcat_log='_tailfc '$PATH_LIN_TOMCAT'/logs/catalina.out'
+alias _tomcat_debug='LC_ALL=en_US '$PATH_LIN_TOMCAT'/bin/catalina.sh jpda start'
+alias _tomcat_start='LC_ALL=en_US '$PATH_LIN_TOMCAT'/bin/startup.sh'
+alias _tomcat_stop='LC_ALL=en_US '$PATH_LIN_TOMCAT'/bin/shutdown.sh'
+
+alias tellmejava='ps -e | grep java'
+alias javamustdie="tellmejava && _killthemall java"
+alias mongo_server="mongod --dbpath \"D:\mongodata\""
+alias mvnjdk8='JAVA_HOME="C:\Program Files\Java\jdk1.8.0_121" mvn'
+alias mvnamznjdk8='JAVA_HOME="C:\Program Files\Java\jdk1.8.0_121"  mvn -Djava.net.useSystemProxies=true -Dproxy.user=${NAME} -Dproxy.pwd=${PASSWORD}'
+alias proxied="http_proxy='http://${NAME}:${PASSWORD}@cerberos:8080' https_proxy='http://${NAME}:${PASSWORD}@cerberos:8080'"
+alias cpwar='_cpwar'
+source ~/.tomcat_runner
+
+if [[ -n "${STARTUP_CMD}" ]]; then
+  $STARTUP_CMD
+  unset STARTUP_CMD
+fi
