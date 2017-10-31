@@ -1,3 +1,4 @@
+#This function detects if "tomcat" is started.
 is_tomcat_started() {
 	string=$(jps -m)
 	if [[ $string == *"start"* ]]; then
