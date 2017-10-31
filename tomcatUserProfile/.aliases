@@ -1,3 +1,5 @@
+#Thanks to jmtalarn (guru software developer)
+
 NAME="user"
 PASSWORD="pass"
 #export TOMCAT_VERSION="apache-tomcat-8.5.23"
